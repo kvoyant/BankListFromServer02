@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.tjeit.banklistfromserver02.adapters.BankAdapter;
 import com.tjeit.banklistfromserver02.databinding.ActivityMainBinding;
 import com.tjeit.banklistfromserver02.datas.Bank;
 import com.tjeit.banklistfromserver02.utils.ConnectServer;
@@ -22,27 +23,27 @@ public class MainActivity extends BaseActivity {
     ActivityMainBinding act;
 
     ArrayList<Bank> bankList = new ArrayList<>();
+    BankAdapter bankAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        bindView();
-        setUpEvents();
+        bindViews();
+        setupEvents();
         setValues();
     }
 
     @Override
-    public void setUpEvents() {
-
-
-
+    public void setupEvents() {
         act.serverTestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 ConnectServer.getRequestInfoBank(mContext, new ConnectServer.JsonResponseHandler() {
                     @Override
                     public void onResponse(JSONObject json) {
-//                      실제로 서버에서 돌아온 응답을 메인 액티비티에서 처리하는 메소드.
+//                        실제로 서버에서 돌아온 응답을
+//                        메인 액티비티에서 처리하는 메쏘드.
 
                         try {
                             int code = json.getInt("code");
@@ -50,29 +51,37 @@ public class MainActivity extends BaseActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    if(code == 200 ) {
-                                        Toast.makeText(mContext,"정상적으로 데이터를 가져왔습니다.", Toast.LENGTH_SHORT).show();
+                                    if (code == 200) {
+                                        Toast.makeText(mContext, "정상적으로 데이터를 가져왔습니다.", Toast.LENGTH_SHORT).show();
 
-//                                        은행이름만 따서 로그찍기
                                         try {
                                             JSONObject data = json.getJSONObject("data");
                                             JSONArray banks = data.getJSONArray("banks");
 
-                                            for(int i=0;i<banks.length();i++) {
+//                                    누적으로 데이터가 쌓이지 않게, 미리 한번 비워주는 코드.
+                                            bankList.clear();
+
+                                            for (int i = 0 ; i < banks.length() ; i++) {
                                                 JSONObject bank = banks.getJSONObject(i);
+
 //                                                String name = bank.getString("name");
-//
-//                                                Log.d("은행이름",name);
+//                                                Log.d("은행이름", name);
 
                                                 Bank bankObj = Bank.getBankFromJson(bank);
+
                                                 bankList.add(bankObj);
+
                                             }
+
+                                            bankAdapter.notifyDataSetChanged();
 
                                         } catch (JSONException e) {
                                             e.printStackTrace();
                                         }
+
                                     }
                                     else {
+
 //                                        서버에서 주는 에러메세지를 토스트로 출력
                                         try {
                                             String message = json.getString("message");
@@ -80,26 +89,32 @@ public class MainActivity extends BaseActivity {
                                         } catch (JSONException e) {
                                             e.printStackTrace();
                                         }
+
+
                                     }
                                 }
                             });
+
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
                     }
                 });
+
             }
         });
     }
 
     @Override
     public void setValues() {
-
+        bankAdapter = new BankAdapter(mContext, bankList);
+        act.bankListView.setAdapter(bankAdapter);
     }
 
     @Override
-    public void bindView() {
+    public void bindViews() {
         act = DataBindingUtil.setContentView(this, R.layout.activity_main);
     }
 }

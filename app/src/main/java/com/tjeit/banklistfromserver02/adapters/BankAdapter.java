@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.tjeit.banklistfromserver02.R;
 import com.tjeit.banklistfromserver02.datas.Bank;
 
@@ -20,7 +21,7 @@ public class BankAdapter extends ArrayAdapter<Bank> {
     LayoutInflater inf;
 
     public BankAdapter(Context context, List<Bank> list) {
-        super(context, R.layout.bank_list_item);
+        super(context, R.layout.bank_list_item, list);
 
         mContext = context;
         mList = list;
@@ -44,6 +45,8 @@ public class BankAdapter extends ArrayAdapter<Bank> {
 
         bankNameTxt.setText(bankData.name);
         bankCodeTxt.setText(String.format("(%s)", bankData.code));
+
+        Glide.with(mContext).load(bankData.logo).into(logoImg);
 
         return row;
     }
