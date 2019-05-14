@@ -50,7 +50,7 @@ public class ConnectServer {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String responseContent = response.body().toString();
+                String responseContent = response.body().string();
 
                 Log.d("서버 응답 내용", responseContent);
 
