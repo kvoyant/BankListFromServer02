@@ -14,7 +14,7 @@ public class Bank {
 
         try {
 
-            bankObject.id = bankJson.getInt("code");
+            bankObject.id = bankJson.getInt("id");
             bankObject.code = bankJson.getString("code");
             bankObject.name = bankJson.getString("name");
             bankObject.logo = bankJson.getString("logo");
